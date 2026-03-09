@@ -6,22 +6,12 @@ import http from 'node:http';
 import cors from 'cors';
 import { config } from './config/index.js';
 import { prisma } from './prisma.js';
+import { typeDefs, resolvers } from './graphql/index.js';
+import { formatError } from './middleware/formatError.js';
 
 export interface AppContext {
   prisma: typeof prisma;
 }
-
-const typeDefs = `#graphql
-  type Query {
-    health: String!
-  }
-`;
-
-const resolvers = {
-  Query: {
-    health: () => 'Checked API is running',
-  },
-};
 
 async function startServer() {
   const app = express();
@@ -30,6 +20,7 @@ async function startServer() {
   const server = new ApolloServer<AppContext>({
     typeDefs,
     resolvers,
+    formatError,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
 

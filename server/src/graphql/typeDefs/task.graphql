@@ -1,0 +1,49 @@
+type Task {
+  id: ID!
+  title: String!
+  description: String
+  completed: Boolean!
+  city: String
+  weather: Weather
+  dueDate: String
+  tags: [String!]!
+  position: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Weather {
+  tempC: Float!
+  tempF: Float!
+  condition: String!
+  icon: String!
+  humidity: Int
+  windKph: Float
+}
+
+input CreateTaskInput {
+  title: String!
+  description: String
+  dueDate: String
+  tags: [String!]
+}
+
+input UpdateTaskInput {
+  title: String
+  description: String
+  completed: Boolean
+  dueDate: String
+  tags: [String!]
+}
+
+type Query {
+  tasks(search: String, tag: String): [Task!]!
+  task(id: ID!): Task
+}
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(id: ID!, input: UpdateTaskInput!): Task!
+  deleteTask(id: ID!): Boolean!
+  reorderTasks(orderedIds: [ID!]!): [Task!]!
+}
