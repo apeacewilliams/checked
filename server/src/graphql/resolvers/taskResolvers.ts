@@ -1,54 +1,48 @@
-import { TaskService } from '../../services/TaskService.js';
+import { TaskService, type CreateTaskInput, type UpdateTaskInput } from '../../services/TaskService.js';
+import { requireAuth } from '../requireAuth.js';
+import type { AppContext } from '../../types.js';
 
 const taskService = new TaskService();
 
-// TODO: Replace hardcoded userId with context.user.id in Phase 2
-const TEMP_USER_ID = 'temp-user-id';
-
 export default {
   Query: {
-    tasks: async (_: unknown, args: { search?: string; tag?: string }) => {
-      return taskService.findAll(TEMP_USER_ID, {
+    tasks: async (_: unknown, args: { search?: string; tag?: string }, context: AppContext) => {
+      const user = requireAuth(context);
+      return taskService.findAll(user.id, {
         search: args.search,
         tag: args.tag,
       });
     },
 
-    task: async (_: unknown, args: { id: string }) => {
-      return taskService.findById(args.id, TEMP_USER_ID);
+    task: async (_: unknown, args: { id: string }, context: AppContext) => {
+      const user = requireAuth(context);
+      return taskService.findById(args.id, user.id);
     },
   },
 
   Mutation: {
-    createTask: async (
-      _: unknown,
-      args: { input: { title: string; description?: string; dueDate?: string; tags?: string[] } },
-    ) => {
-      return taskService.create(TEMP_USER_ID, args.input);
+    createTask: async (_: unknown, args: { input: CreateTaskInput }, context: AppContext) => {
+      const user = requireAuth(context);
+      return taskService.create(user.id, args.input);
     },
 
     updateTask: async (
       _: unknown,
-      args: {
-        id: string;
-        input: {
-          title?: string;
-          description?: string;
-          completed?: boolean;
-          dueDate?: string;
-          tags?: string[];
-        };
-      },
+      args: { id: string; input: UpdateTaskInput },
+      context: AppContext,
     ) => {
-      return taskService.update(args.id, TEMP_USER_ID, args.input);
+      const user = requireAuth(context);
+      return taskService.update(args.id, user.id, args.input);
     },
 
-    deleteTask: async (_: unknown, args: { id: string }) => {
-      return taskService.delete(args.id, TEMP_USER_ID);
+    deleteTask: async (_: unknown, args: { id: string }, context: AppContext) => {
+      const user = requireAuth(context);
+      return taskService.delete(args.id, user.id);
     },
 
-    reorderTasks: async (_: unknown, args: { orderedIds: string[] }) => {
-      return taskService.reorder(TEMP_USER_ID, args.orderedIds);
+    reorderTasks: async (_: unknown, args: { orderedIds: string[] }, context: AppContext) => {
+      const user = requireAuth(context);
+      return taskService.reorder(user.id, args.orderedIds);
     },
   },
 
