@@ -2,14 +2,14 @@ import type { Prisma } from '../generated/prisma/client.js';
 import { prisma } from '../prisma.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
 
-interface CreateTaskInput {
+export interface CreateTaskInput {
   title: string;
   description?: string | null;
   dueDate?: string | null;
   tags?: string[];
 }
 
-interface UpdateTaskInput {
+export interface UpdateTaskInput {
   title?: string;
   description?: string | null;
   completed?: boolean;
@@ -87,30 +87,28 @@ export class TaskService {
   }
 
   async update(id: string, userId: string, input: UpdateTaskInput) {
-    await this.findById(id, userId);
+    let trimmedTitle: string | undefined;
 
     if (input.title !== undefined) {
-      const title = input.title.trim();
+      trimmedTitle = input.title.trim();
 
-      if (!title) {
+      if (!trimmedTitle) {
         throw new ValidationError('Title is required');
       }
 
-      if (title.length > 200) {
+      if (trimmedTitle.length > 200) {
         throw new ValidationError('Title must be 200 characters or less');
       }
-
-      input.title = title;
     }
 
     if (input.description !== undefined && input.description && input.description.length > 2000) {
       throw new ValidationError('Description must be 2000 characters or less');
     }
 
-    return prisma.task.update({
-      where: { id },
+    const updated = await prisma.task.updateManyAndReturn({
+      where: { id, userId },
       data: {
-        ...(input.title !== undefined && { title: input.title }),
+        ...(trimmedTitle !== undefined && { title: trimmedTitle }),
         ...(input.description !== undefined && { description: input.description }),
         ...(input.completed !== undefined && { completed: input.completed }),
         ...(input.dueDate !== undefined && {
@@ -119,6 +117,12 @@ export class TaskService {
         ...(input.tags !== undefined && { tags: input.tags }),
       },
     });
+
+    if (updated.length === 0) {
+      throw new NotFoundError('Task', id);
+    }
+
+    return updated[0]!;
   }
 
   async delete(id: string, userId: string) {
@@ -139,7 +143,7 @@ export class TaskService {
     });
 
     if (count !== orderedIds.length) {
-      throw new NotFoundError('Task', 'one or more provided IDs');
+      throw new ValidationError('One or more task IDs are invalid or do not belong to you');
     }
 
     return prisma.$transaction(

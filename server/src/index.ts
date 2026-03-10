@@ -8,10 +8,11 @@ import { config } from './config/index.js';
 import { prisma } from './prisma.js';
 import { typeDefs, resolvers } from './graphql/index.js';
 import { formatError } from './middleware/formatError.js';
+import { authMiddleware } from './middleware/auth.js';
+import { AuthService } from './services/AuthService.js';
+import type { AppContext } from './types.js';
 
-export interface AppContext {
-  prisma: typeof prisma;
-}
+const authService = new AuthService();
 
 async function startServer() {
   const app = express();
@@ -28,12 +29,23 @@ async function startServer() {
 
   app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
+    cors<cors.CorsRequest>({ origin: config.clientUrl, credentials: true }),
     express.json(),
+    authMiddleware,
     expressMiddleware(server, {
-      context: async () => ({
-        prisma,
-      }),
+      context: async ({ req }) => {
+        let user: AppContext['user'] = null;
+
+        if (req.authUser) {
+          user = await authService.findOrCreateUser(
+            req.authUser.uid,
+            req.authUser.email ?? '',
+            req.authUser.displayName ?? '',
+          );
+        }
+
+        return { prisma, user };
+      },
     }),
   );
 
