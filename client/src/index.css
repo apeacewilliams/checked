@@ -1,0 +1,106 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource/poppins/200.css';
+@import '@fontsource/poppins/300.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Teal primary from Figma (buttons, links, checkboxes) */
+  --primary: oklch(0.77 0.152 163);
+  --primary-foreground: oklch(1 0 0);
+
+  /* Backgrounds */
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0 0 0);
+
+  /* Secondary / muted */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+
+  /* Accent — light teal tint for hover states */
+  --accent: oklch(0.95 0.04 163);
+  --accent-foreground: oklch(0 0 0);
+
+  /* Destructive */
+  --destructive: oklch(0.58 0.22 27);
+
+  /* Borders & inputs */
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.77 0.152 163);
+
+  /* Radius — Maia preset (rounded, soft) */
+  --radius: 0.625rem;
+
+  /* Tag / priority badge colors (from Figma) */
+  --tag-low: oklch(0.943 0 0);
+  --tag-low-foreground: oklch(0.37 0 0);
+  --tag-medium: oklch(0.945 0.07 95);
+  --tag-medium-foreground: oklch(0.42 0.08 75);
+  --tag-high: oklch(0.91 0.08 10);
+  --tag-high-foreground: oklch(0.45 0.15 10);
+}
+
+@theme inline {
+  --font-sans: 'Poppins', sans-serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Tag colors available as Tailwind utilities: bg-tag-low, text-tag-low-foreground, etc. */
+  --color-tag-low: var(--tag-low);
+  --color-tag-low-foreground: var(--tag-low-foreground);
+  --color-tag-medium: var(--tag-medium);
+  --color-tag-medium-foreground: var(--tag-medium-foreground);
+  --color-tag-high: var(--tag-high);
+  --color-tag-high-foreground: var(--tag-high-foreground);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
