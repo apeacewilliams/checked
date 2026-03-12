@@ -5,28 +5,32 @@ import { AppShell } from './layout/AppShell';
 import { DashboardPage, LoginPage, RegisterPage } from './pages';
 import { AuthGuard, AuthProvider } from './features/authentication';
 import { ErrorFallback } from './shared/components/ErrorFallback';
+import { ApolloProvider } from '@apollo/client/react';
+import { apolloClient } from './graphql/client';
 
 function App() {
   return (
-    <AuthProvider>
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => window.location.replace('/')}
-      >
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/" element={<AuthGuard />}>
-              <Route element={<AppShell />}>
-                <Route index element={<DashboardPage />} />
+    <ApolloProvider client={apolloClient}>
+      <AuthProvider>
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => window.location.replace('/')}
+        >
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/" element={<AuthGuard />}>
+                <Route element={<AppShell />}>
+                  <Route index element={<DashboardPage />} />
+                </Route>
               </Route>
-            </Route>
-          </Routes>
-          <Toaster />
-        </BrowserRouter>
-      </ErrorBoundary>
-    </AuthProvider>
+            </Routes>
+            <Toaster theme="light" />
+          </BrowserRouter>
+        </ErrorBoundary>
+      </AuthProvider>
+    </ApolloProvider>
   );
 }
 

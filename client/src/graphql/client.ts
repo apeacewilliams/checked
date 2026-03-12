@@ -4,6 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { HttpLink } from '@apollo/client/link/http';
 import { ErrorLink } from '@apollo/client/link/error';
 import { SetContextLink } from '@apollo/client/link/context';
+import { toast } from 'sonner';
 
 const authLink = new SetContextLink(async (prevContext) => {
   const user = getAuth().currentUser;
@@ -27,8 +28,7 @@ const errorLink = new ErrorLink(({ error }) => {
       }
     }
   } else {
-    // Network error — toast will be wired in Phase 3.4
-    console.error('Network error:', error.message);
+    toast.error('Connection lost. Please check your network and try again.');
   }
 });
 
