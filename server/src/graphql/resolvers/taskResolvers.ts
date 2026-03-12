@@ -1,8 +1,11 @@
 import { TaskService, type CreateTaskInput, type UpdateTaskInput } from '../../services/TaskService.js';
+import { WeatherService } from '../../services/WeatherService.js';
+import { InMemoryWeatherCache } from '../../services/WeatherCache.js';
 import { requireAuth } from '../requireAuth.js';
 import type { AppContext } from '../../types.js';
 
-const taskService = new TaskService();
+const weatherService = new WeatherService(new InMemoryWeatherCache());
+const taskService = new TaskService(weatherService);
 
 export default {
   Query: {

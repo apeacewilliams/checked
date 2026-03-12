@@ -30,3 +30,11 @@ coverage/
 server/prisma/*.db
 server/prisma/*.db-journal
 server/src/generated/
+
+# Design files
+/designs/
+
+
+# Agents and Claude files
+.agents
+.claude

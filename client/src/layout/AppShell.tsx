@@ -5,7 +5,7 @@ export function AppShell() {
   return (
     <>
       <Header />
-      <main className="mx-auto max-w-5xl px-6 py-8">
+      <main className="mx-auto max-w-360 px-6 py-8">
         <Outlet />
       </main>
     </>

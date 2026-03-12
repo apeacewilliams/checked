@@ -16,6 +16,8 @@ export const config = {
   firebaseProjectId: requireEnv('FIREBASE_PROJECT_ID'),
   firebasePrivateKey: requireEnv('FIREBASE_PRIVATE_KEY'),
   firebaseClientEmail: requireEnv('FIREBASE_CLIENT_EMAIL'),
+  // Optional — weather enrichment is silently disabled when absent
+  weatherApiKey: process.env['WEATHER_API_KEY'] ?? '',
 
   get isProduction() {
     return this.nodeEnv === 'production';

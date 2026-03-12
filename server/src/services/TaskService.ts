@@ -1,6 +1,8 @@
-import type { Prisma } from '../generated/prisma/client.js';
+import { Prisma } from '../generated/prisma/client.js';
 import { prisma } from '../prisma.js';
 import { ValidationError, NotFoundError } from '../errors/index.js';
+import { detectCityCandidate } from '../utils/cityDetection.js';
+import type { WeatherService } from './WeatherService.js';
 
 export interface CreateTaskInput {
   title: string;
@@ -18,6 +20,8 @@ export interface UpdateTaskInput {
 }
 
 export class TaskService {
+  constructor(private readonly weatherService: WeatherService) {}
+
   async create(userId: string, input: CreateTaskInput) {
     const title = input.title.trim();
 
@@ -33,7 +37,7 @@ export class TaskService {
       throw new ValidationError('Description must be 2000 characters or less');
     }
 
-    return prisma.$transaction(async (tx) => {
+    const task = await prisma.$transaction(async (tx) => {
       const maxPosition = await tx.task.aggregate({
         where: { userId },
         _max: { position: true },
@@ -52,6 +56,23 @@ export class TaskService {
         },
       });
     });
+
+    // Weather enrichment — non-fatal, never blocks the task being saved
+    const candidate = detectCityCandidate(title);
+    if (candidate) {
+      const weather = await this.weatherService.getWeather(candidate);
+      if (weather) {
+        return prisma.task.update({
+          where: { id: task.id },
+          data: {
+            city: candidate,
+            weatherData: weather as unknown as Prisma.InputJsonValue,
+          },
+        });
+      }
+    }
+
+    return task;
   }
 
   async findAll(userId: string, filters?: { search?: string; tag?: string }) {
@@ -122,7 +143,22 @@ export class TaskService {
       throw new NotFoundError('Task', id);
     }
 
-    return updated[0]!;
+    let result = updated[0]!;
+
+    // Re-detect weather whenever the title changes
+    if (trimmedTitle !== undefined) {
+      const candidate = detectCityCandidate(trimmedTitle);
+      const weather = candidate ? await this.weatherService.getWeather(candidate) : null;
+      result = await prisma.task.update({
+        where: { id: result.id },
+        data: {
+          city: candidate ?? null,
+          weatherData: weather ? (weather as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
+        },
+      });
+    }
+
+    return result;
   }
 
   async delete(id: string, userId: string) {

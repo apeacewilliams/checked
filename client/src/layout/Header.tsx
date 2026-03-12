@@ -24,7 +24,7 @@ export function Header() {
 
       {menuOpen && (
         <nav className="lg:hidden bg-foreground px-6 py-4 flex flex-col gap-3">
-          <Input placeholder="Search" />
+          <Input className="placeholder:text-foreground" placeholder="Search" />
           <Button variant="outline" onClick={logout}>
             Logout
           </Button>
