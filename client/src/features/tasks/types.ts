@@ -57,6 +57,3 @@ export interface DeleteTaskData {
   deleteTask: boolean;
 }
 
-export interface ReorderTasksData {
-  reorderTasks: Task[];
-}

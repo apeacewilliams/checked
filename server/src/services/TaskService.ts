@@ -173,22 +173,4 @@ export class TaskService {
     return true;
   }
 
-  async reorder(userId: string, orderedIds: string[]) {
-    const count = await prisma.task.count({
-      where: { id: { in: orderedIds }, userId },
-    });
-
-    if (count !== orderedIds.length) {
-      throw new ValidationError('One or more task IDs are invalid or do not belong to you');
-    }
-
-    return prisma.$transaction(
-      orderedIds.map((id, index) =>
-        prisma.task.update({
-          where: { id },
-          data: { position: index },
-        })
-      )
-    );
-  }
 }

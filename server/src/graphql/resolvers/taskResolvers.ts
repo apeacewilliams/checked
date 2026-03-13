@@ -1,10 +1,19 @@
-import { TaskService, type CreateTaskInput, type UpdateTaskInput } from '../../services/TaskService.js';
+import {
+  TaskService,
+  type CreateTaskInput,
+  type UpdateTaskInput,
+} from '../../services/TaskService.js';
 import { WeatherService } from '../../services/WeatherService.js';
 import { InMemoryWeatherCache } from '../../services/WeatherCache.js';
+import { DynamoWeatherCache } from '../../services/DynamoWeatherCache.js';
+import { config } from '../../config/index.js';
 import { requireAuth } from '../requireAuth.js';
 import type { AppContext } from '../../types.js';
 
-const weatherService = new WeatherService(new InMemoryWeatherCache());
+const cache = config.awsRegion
+  ? new DynamoWeatherCache(config.dynamoTableName, config.awsRegion)
+  : new InMemoryWeatherCache();
+const weatherService = new WeatherService(cache);
 const taskService = new TaskService(weatherService);
 
 export default {
@@ -43,15 +52,16 @@ export default {
       return taskService.delete(args.id, user.id);
     },
 
-    reorderTasks: async (_: unknown, args: { orderedIds: string[] }, context: AppContext) => {
-      const user = requireAuth(context);
-      return taskService.reorder(user.id, args.orderedIds);
-    },
   },
 
   Task: {
     weather: (task: { weatherData?: unknown }) => {
       return task.weatherData ?? null;
     },
+    dueDate: (task: { dueDate?: Date | null }) => {
+      return task.dueDate ? task.dueDate.toISOString() : null;
+    },
+    createdAt: (task: { createdAt: Date }) => task.createdAt.toISOString(),
+    updatedAt: (task: { updatedAt: Date }) => task.updatedAt.toISOString(),
   },
 };

@@ -21,17 +21,18 @@ export function DashboardPage() {
   const { tasks, loading, error } = useTasks(
     debouncedSearch ? { search: debouncedSearch } : undefined,
   );
+
   const { createTask, creating, updateTask, updating, toggleTask, deleteTask } = useTaskMutations();
 
-  const handleCreate = async ({ title }: TaskFormValues) => {
-    const result = await createTask({ variables: { input: { title } } });
+  const handleCreate = async ({ title, dueDate, tags }: TaskFormValues) => {
+    const result = await createTask({ variables: { input: { title, dueDate, tags } } });
     if (result.data) setShowCreateForm(false);
   };
 
-  const handleUpdate = ({ title }: TaskFormValues) => {
+  const handleUpdate = ({ title, dueDate, tags }: TaskFormValues) => {
     if (!editingTask) return;
     updateTask({
-      variables: { id: editingTask.id, input: { title } },
+      variables: { id: editingTask.id, input: { title, dueDate, tags } },
       onCompleted: () => {
         showSuccess('Task updated');
         setEditingTask(null);
@@ -46,7 +47,7 @@ export function DashboardPage() {
   return (
     <div>
       {/* Page header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-16">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <h1 className="text-3xl font-bold">My Tasks for the next month</h1>
 
         {/* Search + logout — desktop only (mobile uses the header hamburger menu) */}
@@ -54,6 +55,7 @@ export function DashboardPage() {
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             <Input
+              name="search"
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -67,7 +69,6 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Add task */}
       <Button
         className="mb-16 py-6 px-8"
         onClick={() => setShowCreateForm(true)}
@@ -77,7 +78,6 @@ export function DashboardPage() {
         Add task
       </Button>
 
-      {/* Task list */}
       {error ? (
         <p className="text-sm text-destructive">Failed to load tasks. Please refresh.</p>
       ) : (
@@ -94,7 +94,6 @@ export function DashboardPage() {
         />
       )}
 
-      {/* Edit dialog — rendered at page level to avoid remounting on list re-renders */}
       <EditTaskDialog
         task={editingTask}
         open={Boolean(editingTask)}

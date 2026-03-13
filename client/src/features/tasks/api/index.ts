@@ -6,5 +6,4 @@ export {
   CREATE_TASK,
   UPDATE_TASK,
   DELETE_TASK,
-  REORDER_TASKS,
 } from './operations';

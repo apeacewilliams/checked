@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client/react';
-import { CREATE_TASK, UPDATE_TASK, DELETE_TASK, REORDER_TASKS, GET_TASKS } from '../api';
+import { CREATE_TASK, UPDATE_TASK, DELETE_TASK, GET_TASKS } from '../api';
 import { useToast } from '@/features/notifications';
 import type {
   CreateTaskData,
@@ -7,8 +7,6 @@ import type {
   UpdateTaskData,
   UpdateTaskInput,
   DeleteTaskData,
-  GetTasksData,
-  ReorderTasksData,
   Task,
 } from '../types';
 
@@ -19,16 +17,7 @@ export const useTaskMutations = () => {
     CreateTaskData,
     { input: CreateTaskInput }
   >(CREATE_TASK, {
-    update(cache, { data }) {
-      if (!data) return;
-
-      const existing = cache.readQuery<GetTasksData>({ query: GET_TASKS });
-
-      cache.writeQuery<GetTasksData>({
-        query: GET_TASKS,
-        data: { tasks: [...(existing?.tasks ?? []), data.createTask] },
-      });
-    },
+    refetchQueries: [GET_TASKS],
     onCompleted: () => showSuccess('Task created'),
     onError: (err) => showError(err.message),
   });
@@ -59,19 +48,13 @@ export const useTaskMutations = () => {
       update(cache, { data }, { variables }) {
         if (!data?.deleteTask || !variables) return;
         cache.evict({ id: cache.identify({ __typename: 'Task', id: variables.id }) });
+        cache.gc();
       },
       optimisticResponse: { deleteTask: true },
       onCompleted: () => showSuccess('Task deleted'),
       onError: (err) => showError(err.message),
     },
   );
-
-  const [reorderTasks, { loading: reordering }] = useMutation<
-    ReorderTasksData,
-    { orderedIds: string[] }
-  >(REORDER_TASKS, {
-    onError: (err) => showError(err.message),
-  });
 
   return {
     createTask,
@@ -81,7 +64,5 @@ export const useTaskMutations = () => {
     toggleTask,
     deleteTask,
     deleting,
-    reorderTasks,
-    reordering,
   };
 };

@@ -78,11 +78,3 @@ export const DELETE_TASK = gql`
   }
 `;
 
-export const REORDER_TASKS = gql`
-  mutation ReorderTasks($orderedIds: [ID!]!) {
-    reorderTasks(orderedIds: $orderedIds) {
-      ...TaskFields
-    }
-  }
-  ${TASK_FIELDS}
-`;

@@ -1,4 +1,4 @@
-import { AlignLeftIcon, CalendarIcon, DiamondIcon } from 'lucide-react';
+import { AlignLeftIcon, CalendarIcon, TagIcon } from 'lucide-react';
 import {
   Table,
   TableHeader,
@@ -18,9 +18,9 @@ import type { Task } from '../types';
 const COLUMNS = [
   { key: 'name', label: 'Task name', icon: AlignLeftIcon, className: '' },
   { key: 'due', label: 'Due date', icon: CalendarIcon, className: 'w-32' },
-  { key: 'tag', label: 'Tag', icon: DiamondIcon, className: 'w-32' },
+  { key: 'tag', label: 'Tag', icon: TagIcon, className: 'w-32' },
   { key: 'note', label: 'Note', icon: AlignLeftIcon, className: 'w-48' },
-  { key: 'actions', label: 'Actions', icon: null, className: 'w-20' },
+  { key: 'actions', label: 'Actions', icon: null, className: 'w-20 justify-center' },
 ] as const;
 
 // ─── Loading skeleton ─────────────────────────────────────────

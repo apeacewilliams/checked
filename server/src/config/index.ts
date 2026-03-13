@@ -18,6 +18,9 @@ export const config = {
   firebaseClientEmail: requireEnv('FIREBASE_CLIENT_EMAIL'),
   // Optional — weather enrichment is silently disabled when absent
   weatherApiKey: process.env['WEATHER_API_KEY'] ?? '',
+  // Optional — DynamoDB weather cache. Falls back to in-memory cache when absent
+  awsRegion: process.env['AWS_REGION'] ?? '',
+  dynamoTableName: process.env['DYNAMODB_TABLE_NAME'] ?? 'weather-cache',
 
   get isProduction() {
     return this.nodeEnv === 'production';
