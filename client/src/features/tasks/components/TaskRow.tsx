@@ -1,4 +1,6 @@
+import { memo } from 'react';
 import { PencilIcon, Trash2Icon } from 'lucide-react';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { TableRow, TableCell } from '@/components/ui/table';
@@ -22,12 +24,20 @@ function tagColorClasses(tag: string): string {
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const formatted = new Date(dateStr).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(dateStr);
+  due.setHours(0, 0, 0, 0);
+  return due.getTime() === today.getTime() ? `Today - ${formatted}` : formatted;
 }
 
 // ─── Shared props ─────────────────────────────────────────────
 
-interface TaskRowProps {
+export interface TaskRowProps {
   task: Task;
   onToggle: (task: Task) => void;
   onEdit: (task: Task) => void;
@@ -76,13 +86,12 @@ function RowActions({ task, onEdit, onDelete }: Omit<TaskRowProps, 'onToggle'>) 
   );
 }
 
-// ─── Desktop table row ────────────────────────────────────────
+// ─── Desktop cells ────────────────────────────────────────────
 
-export function TaskDesktopRow({ task, onToggle, onEdit, onDelete }: TaskRowProps) {
+function DesktopRowCells({ task, onToggle, onEdit, onDelete }: TaskRowProps) {
   const firstTag = task.tags[0] ?? null;
-
   return (
-    <TableRow>
+    <>
       <TableCell className="w-10 px-3 py-3">
         <Checkbox
           checked={task.completed}
@@ -93,7 +102,7 @@ export function TaskDesktopRow({ task, onToggle, onEdit, onDelete }: TaskRowProp
       <TableCell className="px-3 py-3 text-sm">
         <span className={task.completed ? 'text-muted-foreground' : ''}>{task.title}</span>
       </TableCell>
-      <TableCell className="px-3 py-3 text-sm text-muted-foreground whitespace-nowrap">
+      <TableCell className="px-3 py-3 text-sm whitespace-nowrap text-muted-foreground">
         {formatDate(task.dueDate)}
       </TableCell>
       <TableCell className="px-3 py-3">{firstTag && <TagBadge tag={firstTag} />}</TableCell>
@@ -103,13 +112,28 @@ export function TaskDesktopRow({ task, onToggle, onEdit, onDelete }: TaskRowProp
       <TableCell className="px-3 py-3">
         <RowActions task={task} onEdit={onEdit} onDelete={onDelete} />
       </TableCell>
-    </TableRow>
+    </>
   );
 }
 
+// ─── Desktop table row ────────────────────────────────────────
+
+export const TaskDesktopRow = memo(function TaskDesktopRow(props: TaskRowProps) {
+  return (
+    <TableRow>
+      <DesktopRowCells {...props} />
+    </TableRow>
+  );
+});
+
 // ─── Mobile card ──────────────────────────────────────────────
 
-export function TaskMobileCard({ task, onToggle, onEdit, onDelete }: TaskRowProps) {
+export const TaskMobileCard = memo(function TaskMobileCard({
+  task,
+  onToggle,
+  onEdit,
+  onDelete,
+}: TaskRowProps) {
   const firstTag = task.tags[0] ?? null;
 
   return (
@@ -139,4 +163,4 @@ export function TaskMobileCard({ task, onToggle, onEdit, onDelete }: TaskRowProp
       <RowActions task={task} onEdit={onEdit} onDelete={onDelete} />
     </div>
   );
-}
+});

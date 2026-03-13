@@ -36,7 +36,7 @@ export const apolloClient = new ApolloClient({
   link: ApolloLink.from([
     errorLink,
     authLink,
-    new HttpLink({ uri: 'http://localhost:4000/graphql' }),
+    new HttpLink({ uri: import.meta.env.VITE_GRAPHQL_URL ?? 'http://localhost:4000/graphql' }),
   ]),
   cache: new InMemoryCache(),
   defaultOptions: {

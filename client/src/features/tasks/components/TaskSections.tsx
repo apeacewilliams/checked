@@ -35,25 +35,27 @@ function TaskSection({
   const [open, setOpen] = useState(true);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger className="flex items-center gap-2 mb-3">
-        <h2 className="text-lg font-bold">{title}</h2>
-        {open ? <ChevronDownIcon className="w-5 h-5" /> : <ChevronUpIcon className="w-5 h-5" />}
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <TaskTable
-          tasks={tasks}
-          loading={loading}
-          onToggle={onToggle}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          showInlineForm={showInlineForm}
-          creating={creating}
-          onCreateSubmit={onCreateSubmit}
-          onCreateCancel={onCreateCancel}
-        />
-      </CollapsibleContent>
-    </Collapsible>
+    <div>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger className="flex items-center gap-2 mb-3">
+          <h2 className="text-lg font-bold">{title}</h2>
+          {open ? <ChevronDownIcon className="w-5 h-5" /> : <ChevronUpIcon className="w-5 h-5" />}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <TaskTable
+            tasks={tasks}
+            loading={loading}
+            onToggle={onToggle}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            showInlineForm={showInlineForm}
+            creating={creating}
+            onCreateSubmit={onCreateSubmit}
+            onCreateCancel={onCreateCancel}
+          />
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
   );
 }
 
