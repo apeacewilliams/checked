@@ -41,7 +41,9 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*",
-    "lightningcss-linux-x64-gnu": "*"
+    "lightningcss-linux-x64-gnu": "*",
+    "@esbuild/linux-x64": "*",
+    "@tailwindcss/oxide-linux-x64-gnu": "*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
